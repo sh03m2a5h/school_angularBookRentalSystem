@@ -5,14 +5,30 @@
       <th>名前</th>
       <th>住所</th>
       <th>電話番号</th>
+      <th>メールアドレス</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let person of persons">
       <td>{{person.id}}</td>
-      <td>{{person.name}}</td>
-      <td>{{person.address}}</td>
-      <td>{{person.tel}}</td>
+      <ng-container *ngIf="editingPerson.id!==person.id">
+        <td>{{person.name}}</td>
+        <td>{{person.address}}</td>
+        <td>{{person.tel}}</td>
+        <td>{{person.email}}</td>
+      </ng-container>
+      <ng-container *ngIf="editingPerson.id===person.id">
+        <td><input [(ngModel)]="editingPerson.name"></td>
+        <td><input [(ngModel)]="editingPerson.address"></td>
+        <td><input [(ngModel)]="editingPerson.tel"></td>
+        <td><input [(ngModel)]="editingPerson.email"></td>
+      </ng-container>
+      <td>
+        <a (click)="edit(person)" *ngIf="editingPerson.id!==person.id">編集</a>
+        <a (click)="save(person)" *ngIf="editingPerson.id===person.id">保存</a>
+        /
+        <a (click)="delete(book)">削除</a>
+      </td>
     </tr>
   </tbody>
 </table>

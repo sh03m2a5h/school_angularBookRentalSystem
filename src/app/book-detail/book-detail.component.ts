@@ -8,7 +8,7 @@ import {DatabaseService} from '../database.service';
   styleUrls: ['./book-detail.component.css']
 })
 export class BookDetailComponent implements OnInit {
-  private selectedBook: Book;
+  selectedBook: Book;
   registerBookDetail: BookDetail;
   @Input('selectedBook')
   set updateSelectedBook(Value: Book) {

@@ -75,7 +75,7 @@ export class BooksComponent implements OnInit {
   doRegister() {
     this.books.push(this.registerBook);
     this.registerBook = new Book();
-    //this.databaseService.setBooks(this.books);
+    // this.databaseService.setBooks(this.books);
   }
 
   registerBookDateChange(date: string) {

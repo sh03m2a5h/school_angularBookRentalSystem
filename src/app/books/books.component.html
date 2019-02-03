@@ -16,7 +16,7 @@
     <tr *ngFor="let book of books" (click)="selectedBook=book">
       <ng-container *ngIf="search(book)">
         <td>{{book.isbn}}</td>
-        <ng-container *ngIf="!(editingBook.isbn===book.isbn)">
+        <ng-container *ngIf="editingBook.isbn!==book.isbn">
           <td>{{book.title}}</td>
           <td>{{book.actor}}</td>
           <td>{{book.date | date:'yyyy年MM月dd日'}}</td>
@@ -27,7 +27,7 @@
           <td><input type="date" [ngModel]="editingBook.date | date:'yyyy-MM-dd'" (ngModelChange)="editingBookDateChange($event)"></td>
         </ng-container>
         <td>
-          <a (click)="edit(book)" *ngIf="!(editingBook.isbn===book.isbn)">編集</a>
+          <a (click)="edit(book)" *ngIf="editingBook.isbn!==book.isbn">編集</a>
           <a (click)="save(book)" *ngIf="editingBook.isbn===book.isbn">保存</a>
           /
           <a (click)="delete(book)">削除</a>
