@@ -1,0 +1,21 @@
+ul{
+  list-style: none;
+  padding: 0px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+ul a{
+  text-decoration: none;
+  color: black;
+}
+li{
+  margin: 2px;
+  padding: 3px;
+  background-color: #bababa;
+  border-radius: 3px;
+}
+li:hover,li:hover a{
+  background-color: #2c2c2c;
+  color: white;
+}

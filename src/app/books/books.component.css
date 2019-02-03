@@ -1,0 +1,27 @@
+tfoot td{
+  text-align: center;
+}
+table a{
+  color: #939393;
+  text-decoration: underline;
+  cursor: pointer;
+}
+table a:hover{
+  color: black;
+}
+input{
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: default;
+  font-size: 100%;
+}
+.search{
+  display: block;
+}

@@ -1,0 +1,51 @@
+<div class="search">
+  <label>検索</label>
+  <input type="text" [(ngModel)]="searchText">
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>ISBN</th>
+      <th>タイトル</th>
+      <th>著者</th>
+      <th>発行日</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let book of books" (click)="selectedBook=book">
+      <ng-container *ngIf="search(book)">
+        <td>{{book.isbn}}</td>
+        <ng-container *ngIf="!(editingBook.isbn===book.isbn)">
+          <td>{{book.title}}</td>
+          <td>{{book.actor}}</td>
+          <td>{{book.date | date:'yyyy年MM月dd日'}}</td>
+        </ng-container>
+        <ng-container *ngIf="editingBook.isbn===book.isbn">
+          <td><input [(ngModel)]="editingBook.title"></td>
+          <td><input [(ngModel)]="editingBook.actor"></td>
+          <td><input type="date" [ngModel]="editingBook.date | date:'yyyy-MM-dd'" (ngModelChange)="editingBookDateChange($event)"></td>
+        </ng-container>
+        <td>
+          <a (click)="edit(book)" *ngIf="!(editingBook.isbn===book.isbn)">編集</a>
+          <a (click)="save(book)" *ngIf="editingBook.isbn===book.isbn">保存</a>
+          /
+          <a (click)="delete(book)">削除</a>
+        </td>
+      </ng-container>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="5" (click)="showRegister()">書籍を登録する<span class="triangle"></span></td>
+    </tr>
+    <tr *ngIf="registerForm">
+      <td><input type="text" [(ngModel)]="registerBook.isbn"></td>
+      <td><input type="text" [(ngModel)]="registerBook.title"></td>
+      <td><input type="text" [(ngModel)]="registerBook.actor"></td>
+      <td><input type="date" [ngModel]="registerBook.date | date:'yyyy-MM-dd'" (ngModelChange)="registerBookDateChange($event)"></td>
+      <td><input type="button" value="追加" (click)="doRegister()"></td>
+    </tr>
+  </tfoot>
+</table>
+<app-book-detail *ngIf="selectedBook" [selectedBook]="selectedBook"></app-book-detail>
