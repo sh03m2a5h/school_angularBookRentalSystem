@@ -1,3 +1,5 @@
+import {Data} from '@angular/router';
+
 export class Book {
     public isbn: number;
     public title: string;
@@ -53,7 +55,7 @@ export class DataBase {
     public persons: Array<Member> = new Array<Member>();
     public books: Array<Book> = new Array<Book>();
     public bookDetails: Array<BookDetail> = new Array<BookDetail>();
-    private histories: Array<History> = new Array<History>();
+    public histories: Array<History> = new Array<History>();
 
     constructor() {
         this.persons.push(new Member());
@@ -77,6 +79,14 @@ export class DataBase {
             this.persons.push(member);
             return true;
         }
+    }
+
+    generateMemberId(member: Member): void {
+      let idBuff: number;
+      do {
+        idBuff = Math.floor(Math.random() * 90000) + 10000;
+      } while (this.getMemberById(idBuff));
+      member.id = idBuff;
     }
 
     getMemberById(id: number): Member {
@@ -111,7 +121,7 @@ export class DataBase {
 
     setRental(isbn: number, serial: number, id: number): boolean {
       const bookDetail = this.getBookDetailByISBNSerial(isbn, serial);
-      if (bookDetail) {
+      if (!bookDetail || bookDetail.status) {
         return false;
       } else {
         bookDetail.status = id;
@@ -123,12 +133,32 @@ export class DataBase {
 
     setReturn(isbn: number, serial: number, id: number): boolean {
       const bookDetail = this.getBookDetailByISBNSerial(isbn, serial);
-      if (!bookDetail) {
+      if (!bookDetail || !bookDetail.status) {
         return false;
       } else {
         bookDetail.status = null;
         bookDetail.date = null;
         this.histories.push(new History(id, isbn, 'return', new Date(Date.now())));
       }
+    }
+
+    parse(json: object): void {
+      const DB = json as DataBase;
+      Object.keys(DB).forEach(k => {
+        DB[k].forEach(table => {
+          Object.keys(table).forEach(key => {
+            if (key === 'date') {
+              table.date = new Date(table.date);
+              if (table.date.toString() === 'Invalid Date') {
+                table.date = null;
+              }
+            }
+          });
+        });
+        console.log(DB[k]);
+        this[k] = DB[k];
+      });
+      console.log(this);
+      return;
     }
 }

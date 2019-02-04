@@ -38,12 +38,29 @@ export class BookDetailComponent implements OnInit {
   showRegister() {
     this.registerForm = !this.registerForm;
     this.registerBookDetail = new BookDetail();
-    this.registerBookDetail.isbn = this.selectedBook.isbn;
   }
 
   doRegister() {
+    this.registerBookDetail.isbn = this.selectedBook.isbn;
+    this.registerBookDetail.serial = Number(this.registerBookDetail.serial);
     this.bookDetails.push(this.registerBookDetail);
     this.selectedBookDetail.push(this.registerBookDetail);
     this.registerBookDetail = new BookDetail();
+  }
+
+  delete(bookDetail: BookDetail) {
+    if (confirm('本当に削除しますか？')) {
+      let target = event.target as HTMLElement;
+      while (!target.tagName.includes('TR')) {
+        target = target.parentElement;
+      }
+      target.querySelector('td').replaceWith(document.createElement('td'));
+      target.remove();
+      this.bookDetails.forEach((targetBookDetail, targetIdx) => {
+        if (targetBookDetail === bookDetail) {
+          this.bookDetails.splice(targetIdx, 1);
+        }
+      });
+    }
   }
 }

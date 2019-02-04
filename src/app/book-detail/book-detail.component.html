@@ -5,6 +5,7 @@
       <th>シリアル番号</th>
       <th>貸し出し状況</th>
       <th>貸出日</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -12,16 +13,16 @@
       <td>{{bookDetail.serial}}</td>
       <td>{{bookDetail.status}}</td>
       <td>{{bookDetail.date}}</td>
+      <td><a (click)="delete(bookDetail)">削除</a></td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <td colspan="3" (click)="showRegister()">シリアル番号を登録する<span class="triangle"></span></td>
+      <td colspan="4" (click)="showRegister()">シリアル番号を登録する<span class="triangle"></span></td>
     </tr>
     <tr *ngIf="registerForm">
-      <td><input type="text" [(ngModel)]="registerBookDetail.serial"></td>
+      <td colspan="3"><input type="text" [(ngModel)]="registerBookDetail.serial"></td>
       <td><input type="button" value="追加" (click)="doRegister()"></td>
-      <td></td>
     </tr>
   </tfoot>
 </table>

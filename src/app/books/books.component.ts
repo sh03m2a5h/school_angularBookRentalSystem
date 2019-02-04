@@ -35,7 +35,6 @@ export class BooksComponent implements OnInit {
   delete(book: Book) {
     if (confirm('本当に削除しますか？')) {
       let target = event.target as HTMLElement;
-      console.log(target);
       while (!target.tagName.includes('TR')) {
         target = target.parentElement;
       }
@@ -73,9 +72,14 @@ export class BooksComponent implements OnInit {
   }
 
   doRegister() {
-    this.books.push(this.registerBook);
+    this.registerBook.isbn = Number(this.registerBook.isbn);
+    if (!this.databaseService.addBook(this.registerBook)) {
+      alert('同じISBNコードの書籍が存在するようです');
+      if (!confirm('入力を中止しますか?')) {
+        return;
+      }
+    }
     this.registerBook = new Book();
-    // this.databaseService.setBooks(this.books);
   }
 
   registerBookDateChange(date: string) {

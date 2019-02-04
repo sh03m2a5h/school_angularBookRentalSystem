@@ -1,3 +1,25 @@
-<p>
-  rental works!
-</p>
+<table>
+  <tbody>
+    <tr>
+      <th>会員番号</th>
+      <td><input [(ngModel)]="memberId"></td>
+    </tr>
+    <tr>
+      <th>ISBN</th>
+      <td><input [(ngModel)]="bookIsbn"></td>
+    </tr>
+    <tr>
+      <th>シリアル番号</th>
+      <td><input [(ngModel)]="bookSerial"></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td></td>
+      <th>
+        <input type="button" value="借りる" (click)="rentals()">&nbsp;
+        <input type="button" value="返す" (click)="returns()">
+      </th>
+    </tr>
+  </tfoot>
+</table>

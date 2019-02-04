@@ -8,36 +8,66 @@ import {Book, Member} from '../DataBase';
   styleUrls: ['./person.component.css']
 })
 export class PersonComponent implements OnInit {
-  persons: Member[];
-  editingPerson: Member;
+  members: Member[];
+  editingMember: Member;
+  registerMember: Member;
+  registerForm: boolean;
 
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    this.getPersons();
+    this.getMember();
+    this.editingMember = new Member();
   }
 
-  getPersons(): void {
-    this.databaseService.getPersons().subscribe( persons => this.persons = persons);
+  getMember(): void {
+    this.databaseService.getMembers().subscribe(persons => this.members = persons);
   }
 
   edit(person: Member) {
-    if (this.editingPerson.id && !confirm('編集中のデータは削除されます。よろしいですか？')) {
+    if (this.editingMember.id && !confirm('編集中のデータは削除されます。よろしいですか？')) {
       return;
     }
-    this.editingPerson.id = person.id;
-    this.editingPerson.name = person.name;
-    this.editingPerson.tel = person.tel;
-    this.editingPerson.address = person.address;
-    this.editingPerson.email = person.email;
+    this.editingMember.id = person.id;
+    this.editingMember.name = person.name;
+    this.editingMember.tel = person.tel;
+    this.editingMember.address = person.address;
+    this.editingMember.email = person.email;
   }
 
   save(person: Member) {
-    this.persons.forEach((targetPerson, targetIdx) => {
+    this.members.forEach((targetPerson, targetIdx) => {
       if (targetPerson.id === person.id) {
-        this.persons.splice(targetIdx, 1, this.editingPerson);
+        this.members.splice(targetIdx, 1, this.editingMember);
       }
     });
-    this.editingPerson = new Member();
+    this.editingMember = new Member();
+  }
+
+  delete(members: Member) {
+    if (confirm('本当に削除しますか？')) {
+      let target = event.target as HTMLElement;
+      while (!target.tagName.includes('TR')) {
+        target = target.parentElement;
+      }
+      target.querySelector('td').replaceWith(document.createElement('td'));
+      target.remove();
+      this.members.forEach((targetPerson, targetIdx) => {
+        if (targetPerson === members) {
+          this.members.splice(targetIdx, 1);
+        }
+      });
+    }
+  }
+
+  showRegister() {
+    this.registerForm = !this.registerForm;
+    this.registerMember = new Member();
+  }
+
+  doRegister() {
+    this.registerMember.id = Number(this.registerMember.id);
+    this.databaseService.addMember(this.registerMember);
+    this.registerMember = new Member();
   }
 }

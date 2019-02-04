@@ -1,7 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { DataBase, Book, BookDetail, Member } from './DataBase';
 import { Observable, of } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -14,19 +13,7 @@ export class DatabaseService implements OnInit {
     request.open('GET', 'https://script.google.com/macros/s/AKfycbwgv5NQ9D6OTQyqoZ8k7niQCqM9gZMvfcyb6xISpxMPb5gYL54T/exec', false);
     request.onreadystatechange = () => {
       const json = JSON.parse(request.responseText);
-      Object.keys(json).forEach(k => {
-        json[k].forEach(table => {
-          Object.keys(table).forEach(key => {
-            if (key === 'date') {
-              table.date = new Date(table.date);
-            }
-          });
-        });
-        console.log(json[k]);
-        this.dataBase[k] = json[k];
-      });
-      console.log(this.dataBase);
-      return;
+      this.dataBase.parse(json);
     };
     request.send();
     setInterval(() => {
@@ -37,19 +24,41 @@ export class DatabaseService implements OnInit {
   ngOnInit(): void {
   }
 
+  addBook(book: Book): boolean {
+    if (!this.dataBase.getBookByISBN(book.isbn)) {
+      this.dataBase.books.push(book);
+      return true;
+    }
+    return false;
+  }
+
+  addMember(member: Member): void {
+    this.dataBase.generateMemberId(member);
+    this.dataBase.persons.push(member);
+  }
+
+  setRental(isbn: number, serial: number, id: number): boolean {
+    return this.dataBase.setRental(isbn, serial, id);
+  }
+
+  setReturn(isbn: number, serial: number, id: number): boolean {
+    return this.dataBase.setReturn(isbn, serial, id);
+  }
+
   getBooks(): Observable<Book[]> {
     return of(this.dataBase.books);
   }
 
-  setBooks(books: Book[]) {
-    this.dataBase.books = books;
-  }
-
-  getPersons(): Observable<Member[]> {
+  getMembers(): Observable<Member[]> {
     return of(this.dataBase.persons);
   }
 
   getBookDetails(): Observable<BookDetail[]> {
     return of(this.dataBase.bookDetails);
+  }
+
+  getHistories(): Observable<History[]> {
+    // @ts-ignore
+    return of(this.dataBase.histories);
   }
 }

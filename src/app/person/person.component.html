@@ -6,29 +6,43 @@
       <th>住所</th>
       <th>電話番号</th>
       <th>メールアドレス</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let person of persons">
+    <tr *ngFor="let person of members">
       <td>{{person.id}}</td>
-      <ng-container *ngIf="editingPerson.id!==person.id">
+      <ng-container *ngIf="editingMember.id!==person.id">
         <td>{{person.name}}</td>
         <td>{{person.address}}</td>
         <td>{{person.tel}}</td>
         <td>{{person.email}}</td>
       </ng-container>
-      <ng-container *ngIf="editingPerson.id===person.id">
-        <td><input [(ngModel)]="editingPerson.name"></td>
-        <td><input [(ngModel)]="editingPerson.address"></td>
-        <td><input [(ngModel)]="editingPerson.tel"></td>
-        <td><input [(ngModel)]="editingPerson.email"></td>
+      <ng-container *ngIf="editingMember.id===person.id">
+        <td><input [(ngModel)]="editingMember.name"></td>
+        <td><input [(ngModel)]="editingMember.address"></td>
+        <td><input [(ngModel)]="editingMember.tel"></td>
+        <td><input [(ngModel)]="editingMember.email"></td>
       </ng-container>
       <td>
-        <a (click)="edit(person)" *ngIf="editingPerson.id!==person.id">編集</a>
-        <a (click)="save(person)" *ngIf="editingPerson.id===person.id">保存</a>
+        <a (click)="edit(person)" *ngIf="editingMember.id!==person.id">編集</a>
+        <a (click)="save(person)" *ngIf="editingMember.id===person.id">保存</a>
         /
-        <a (click)="delete(book)">削除</a>
+        <a (click)="delete(person)">削除</a>
       </td>
     </tr>
   </tbody>
+  <tfoot>
+  <tr>
+    <td colspan="6" (click)="showRegister()">会員を登録する<span class="triangle"></span></td>
+  </tr>
+  <tr *ngIf="registerForm">
+    <td>自動生成</td>
+    <td><input type="text" [(ngModel)]="registerMember.name"></td>
+    <td><input type="text" [(ngModel)]="registerMember.address"></td>
+    <td><input type="text" [(ngModel)]="registerMember.tel"></td>
+    <td><input type="text" [(ngModel)]="registerMember.email"></td>
+    <td><input type="button" value="追加" (click)="doRegister()"></td>
+  </tr>
+  </tfoot>
 </table>
