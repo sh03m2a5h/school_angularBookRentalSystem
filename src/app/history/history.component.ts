@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DatabaseService} from '../database.service';
+import { RentHistory } from '../DataBase';
 
 @Component({
   selector: 'app-history',
@@ -7,11 +8,16 @@ import {DatabaseService} from '../database.service';
   styleUrls: ['./history.component.css']
 })
 export class HistoryComponent implements OnInit {
+  histories: RentHistory[];
 
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    this.databaseService.getHistories().subscribe();
+    this.getHistories();
+  }
+
+  getHistories(): void {
+    this.databaseService.getHistories().subscribe(histories => this.histories = histories);
   }
 
 }

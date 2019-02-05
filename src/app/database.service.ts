@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { DataBase, Book, BookDetail, Member } from './DataBase';
+import { DataBase, Book, BookDetail, Member, RentHistory } from './DataBase';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
@@ -16,9 +16,9 @@ export class DatabaseService implements OnInit {
       this.dataBase.parse(json);
     };
     request.send();
-    setInterval(() => {
-      console.log(this.dataBase);
-    }, 10000);
+    // setInterval(() => {
+    //   console.log(this.dataBase);
+    // }, 10000);
   }
 
   ngOnInit(): void {
@@ -57,7 +57,7 @@ export class DatabaseService implements OnInit {
     return of(this.dataBase.bookDetails);
   }
 
-  getHistories(): Observable<History[]> {
+  getHistories(): Observable<RentHistory[]> {
     // @ts-ignore
     return of(this.dataBase.histories);
   }

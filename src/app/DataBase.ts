@@ -38,14 +38,16 @@ export class BookDetail {
       this.date = null;
     }
 }
-export class History {
-  private id: number;
-  private isbn: number;
-  private type: string;
-  private date: Date;
-  constructor(id: number, isbn: number, type: string, date: Date) {
+export class RentHistory {
+  public id: number;
+  public isbn: number;
+  public serial: number;
+  public type: string;
+  public date: Date;
+  constructor(id: number, isbn: number, serial: number, type: string, date: Date) {
     this.id = id;
     this.isbn = isbn;
+    this.serial = serial;
     this.type = type;
     this.date = date;
   }
@@ -55,7 +57,7 @@ export class DataBase {
     public persons: Array<Member> = new Array<Member>();
     public books: Array<Book> = new Array<Book>();
     public bookDetails: Array<BookDetail> = new Array<BookDetail>();
-    public histories: Array<History> = new Array<History>();
+    public histories: Array<RentHistory> = new Array<RentHistory>();
 
     constructor() {
         this.persons.push(new Member());
@@ -127,7 +129,8 @@ export class DataBase {
         bookDetail.status = id;
         const now = new Date(Date.now());
         bookDetail.date = now;
-        this.histories.push(new History(id, isbn, 'rental', now));
+        this.histories.push(new RentHistory(id, isbn, serial, 'rental', now));
+        return true;
       }
     }
 
@@ -138,7 +141,8 @@ export class DataBase {
       } else {
         bookDetail.status = null;
         bookDetail.date = null;
-        this.histories.push(new History(id, isbn, 'return', new Date(Date.now())));
+        this.histories.push(new RentHistory(id, isbn, serial, 'return', new Date(Date.now())));
+        return true;
       }
     }
 
