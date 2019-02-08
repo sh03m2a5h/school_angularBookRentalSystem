@@ -1,24 +1,27 @@
 import { Injectable, OnInit } from '@angular/core';
 import { DataBase, Book, BookDetail, Member, RentHistory } from './DataBase';
 import { Observable, of } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService implements OnInit {
   private dataBase = new DataBase();
+  private url = 'https://script.google.com/macros/s/AKfycbwgv5NQ9D6OTQyqoZ8k7niQCqM9gZMvfcyb6xISpxMPb5gYL54T/exec';
 
-  constructor() {
-    const request = new XMLHttpRequest();
-    request.open('GET', 'https://script.google.com/macros/s/AKfycbwgv5NQ9D6OTQyqoZ8k7niQCqM9gZMvfcyb6xISpxMPb5gYL54T/exec', false);
-    request.onreadystatechange = () => {
-      const json = JSON.parse(request.responseText);
-      this.dataBase.parse(json);
-    };
-    request.send();
-    // setInterval(() => {
-    //   console.log(this.dataBase);
-    // }, 10000);
+  constructor(private http: HttpClient) {
+    http.get<DataBase>(this.url).subscribe(dataBase => this.dataBase = dataBase);
+    // const request = new XMLHttpRequest();
+    // request.open('GET', this.url, false);
+    // request.onreadystatechange = () => {
+    //   const json = JSON.parse(request.responseText);
+    //   this.dataBase.parse(json);
+    // };
+    // request.send();
+    setInterval(() => {
+      console.log(this.dataBase);
+    }, 10000);
   }
 
   ngOnInit(): void {
