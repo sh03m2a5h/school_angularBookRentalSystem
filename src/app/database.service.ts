@@ -8,17 +8,9 @@ import {HttpClient} from '@angular/common/http';
 })
 export class DatabaseService implements OnInit {
   private dataBase = new DataBase();
-  private url = 'https://script.google.com/macros/s/AKfycbwgv5NQ9D6OTQyqoZ8k7niQCqM9gZMvfcyb6xISpxMPb5gYL54T/exec';
+  private url = 'https://script.google.com/macros/s/AKfycbxJYmI_uTpQdiF7-zorxZW8PnNp_QEXyi5RhtUMy-pvhtSZynf-/exec';
 
   constructor(private http: HttpClient) {
-    http.get<DataBase>(this.url).subscribe(dataBase => this.dataBase = dataBase);
-    // const request = new XMLHttpRequest();
-    // request.open('GET', this.url, false);
-    // request.onreadystatechange = () => {
-    //   const json = JSON.parse(request.responseText);
-    //   this.dataBase.parse(json);
-    // };
-    // request.send();
     setInterval(() => {
       console.log(this.dataBase);
     }, 10000);
@@ -29,7 +21,7 @@ export class DatabaseService implements OnInit {
 
   addBook(book: Book): boolean {
     if (!this.dataBase.getBookByISBN(book.isbn)) {
-      this.dataBase.books.push(book);
+      this.dataBase.addBook(book);
       return true;
     }
     return false;
@@ -37,7 +29,7 @@ export class DatabaseService implements OnInit {
 
   addMember(member: Member): void {
     this.dataBase.generateMemberId(member);
-    this.dataBase.persons.push(member);
+    this.dataBase.addMember(member);
   }
 
   setRental(isbn: number, serial: number, id: number): boolean {
@@ -49,19 +41,46 @@ export class DatabaseService implements OnInit {
   }
 
   getBooks(): Observable<Book[]> {
-    return of(this.dataBase.books);
+    let result: Observable<Book[]>;
+    if (!this.dataBase.books[0]) {
+      result = this.http.get<Book[]>(this.url + '?table=books');
+      result.subscribe(books => this.dataBase.books = books);
+    } else {
+      result = of(this.dataBase.books);
+    }
+    return result;
   }
 
   getMembers(): Observable<Member[]> {
-    return of(this.dataBase.persons);
+    let result: Observable<Member[]>;
+    if (!this.dataBase.persons[0]) {
+      result = this.http.get<Member[]>(this.url + '?table=persons');
+      result.subscribe(persons => this.dataBase.persons = persons);
+    } else {
+      result = of(this.dataBase.persons);
+    }
+    return result;
   }
 
   getBookDetails(): Observable<BookDetail[]> {
-    return of(this.dataBase.bookDetails);
+    let result: Observable<BookDetail[]>;
+    if (!this.dataBase.bookDetails[0]) {
+      result = this.http.get<BookDetail[]>(this.url + '?table=bookDetails');
+      result.subscribe(bookDetails => this.dataBase.bookDetails = bookDetails);
+    } else {
+      result = of(this.dataBase.bookDetails);
+    }
+    return result;
   }
 
   getHistories(): Observable<RentHistory[]> {
-    // @ts-ignore
-    return of(this.dataBase.histories);
+    let result: Observable<RentHistory[]>;
+    if (!this.dataBase.histories[0]) {
+      result = this.http.get<RentHistory[]>(this.url + '?table=histories');
+      result.subscribe(histories => this.dataBase.histories = histories);
+    } else {
+      result = of(this.dataBase.histories);
+    }
+    return result;
   }
 }

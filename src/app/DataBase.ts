@@ -60,9 +60,9 @@ export class DataBase {
     public histories: Array<RentHistory> = new Array<RentHistory>();
 
     constructor() {
-        this.persons.push(new Member());
-        this.books.push(new Book());
-        this.bookDetails.push(new BookDetail());
+        // this.persons.push(new Member());
+        // this.books.push(new Book());
+        // this.bookDetails.push(new BookDetail());
     }
 
     addBook(book: Book): boolean {
