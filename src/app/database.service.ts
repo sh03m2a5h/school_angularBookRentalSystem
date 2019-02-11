@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { DataBase, Book, BookDetail, Member, RentHistory } from './DataBase';
 import { Observable, of } from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
