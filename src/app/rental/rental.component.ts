@@ -21,7 +21,7 @@ export class RentalComponent implements OnInit {
 
 
   rentals() {
-    if (!this.databaseService.setRental(Number(this.bookIsbn), Number(this.bookSerial), Number(this.memberId))) {
+    if (!this.databaseService.setRental(Number(this.bookIsbn), Number(this.bookSerial), Number(this.memberId), new Date())) {
       alert('レンタルに失敗しました。どれかが存在しないか借りられてます');
     }
   }

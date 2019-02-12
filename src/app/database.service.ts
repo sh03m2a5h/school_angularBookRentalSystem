@@ -1,22 +1,26 @@
-import { Injectable, OnInit } from '@angular/core';
-import { DataBase, Book, BookDetail, Member, RentHistory } from './DataBase';
+import { Injectable } from '@angular/core';
+import {DataBase, Book, BookDetail, Member, RentHistory, Message} from './DataBase';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DatabaseService implements OnInit {
+export class DatabaseService {
   private dataBase = new DataBase();
   private url = 'https://script.google.com/macros/s/AKfycbxJYmI_uTpQdiF7-zorxZW8PnNp_QEXyi5RhtUMy-pvhtSZynf-/exec';
+  private socket: WebSocketSubject<Message>;
 
   constructor(private http: HttpClient) {
+    this.socket = WebSocketSubject.create(`ws://${document.location.hostname}:8080`);
+
+    this.socket.subscribe((message) => {
+      console.log(message);
+    });
     setInterval(() => {
       console.log(this.dataBase);
     }, 10000);
-  }
-
-  ngOnInit(): void {
   }
 
   addBook(book: Book): boolean {
@@ -32,8 +36,8 @@ export class DatabaseService implements OnInit {
     this.dataBase.addMember(member);
   }
 
-  setRental(isbn: number, serial: number, id: number): boolean {
-    return this.dataBase.setRental(isbn, serial, id);
+  setRental(isbn: number, serial: number, id: number, returnDate: Date): boolean {
+    return this.dataBase.setRental(isbn, serial, id, returnDate);
   }
 
   setReturn(isbn: number, serial: number, id: number): boolean {
@@ -53,11 +57,11 @@ export class DatabaseService implements OnInit {
 
   getMembers(): Observable<Member[]> {
     let result: Observable<Member[]>;
-    if (!this.dataBase.persons[0]) {
+    if (!this.dataBase.members[0]) {
       result = this.http.get<Member[]>(this.url + '?table=persons');
-      result.subscribe(persons => this.dataBase.persons = persons);
+      result.subscribe(members => this.dataBase.members = members);
     } else {
-      result = of(this.dataBase.persons);
+      result = of(this.dataBase.members);
     }
     return result;
   }

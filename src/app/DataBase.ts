@@ -1,42 +1,51 @@
-import {Data} from '@angular/router';
-
 export class Book {
-    public isbn: number;
-    public title: string;
-    public actor: string;
-    public date: Date;
-    constructor() {
-      this.isbn = null;
-      this.title = null;
-      this.actor = null;
-      this.date = null;
+  public isbn: number;
+  public title: string;
+  public actor: string;
+  public date: Date;
+  public picture?: ImageBitmap;
+  constructor(obj?: Book) {
+    if (obj) {
+      this.isbn = obj.isbn;
+      this.title = obj.title;
+      this.actor = obj.actor;
+      this.date = obj.date;
     }
+  }
 }
 export class Member {
-    public name: string;
-    public address: string;
-    public tel: string;
-    public email: string;
-    public id: number;
-    constructor() {
-      this.name = null;
-      this.address = null;
-      this.tel = null;
-      this.email = null;
-      this.id = null;
+  public id: number;
+  public name: string;
+  public address: string;
+  public tel: string;
+  public email: string;
+  constructor(obj?: Member) {
+    if (obj) {
+      this.name = obj.name;
+      this.address = obj.address;
+      this.tel = obj.tel;
+      this.email = obj.email;
+      this.id = obj.id;
     }
+  }
 }
 export class BookDetail {
-    public isbn: number;
-    public serial: number;
-    public status: number;
-    public date: Date;
-    constructor() {
-      this.isbn = null;
-      this.serial = null;
-      this.status = null;
-      this.date = null;
+  public isbn: number;
+  public serial: number;
+  public status?: number;
+  public rentalDate?: Date;
+  public returnDate?: Date;
+  constructor(obj?: BookDetail) {
+    if (obj) {
+      this.isbn = obj.isbn;
+      this.serial = obj.serial;
+      if (obj.status) {
+        this.status = obj.status;
+        this.rentalDate = obj.rentalDate;
+        this.returnDate = obj.returnDate;
+      }
     }
+  }
 }
 export class RentHistory {
   public id: number;
@@ -44,23 +53,25 @@ export class RentHistory {
   public serial: number;
   public type: string;
   public date: Date;
-  constructor(id: number, isbn: number, serial: number, type: string, date: Date) {
-    this.id = id;
-    this.isbn = isbn;
-    this.serial = serial;
-    this.type = type;
-    this.date = date;
+  constructor(obj?: RentHistory) {
+    if (obj) {
+      this.id = obj.id;
+      this.isbn = obj.isbn;
+      this.serial = obj.serial;
+      this.type = obj.type;
+      this.date = obj.date;
+    }
   }
 }
 
 export class DataBase {
-    public persons: Array<Member> = new Array<Member>();
+    public members: Array<Member> = new Array<Member>();
     public books: Array<Book> = new Array<Book>();
     public bookDetails: Array<BookDetail> = new Array<BookDetail>();
     public histories: Array<RentHistory> = new Array<RentHistory>();
 
     constructor() {
-        // this.persons.push(new Member());
+        // this.members.push(new Member());
         // this.books.push(new Book());
         // this.bookDetails.push(new BookDetail());
     }
@@ -78,7 +89,7 @@ export class DataBase {
         if (this.getMemberById(member.id)) {
             return false;
         } else {
-            this.persons.push(member);
+            this.members.push(member);
             return true;
         }
     }
@@ -93,7 +104,7 @@ export class DataBase {
 
     getMemberById(id: number): Member {
         let result: Member = null;
-        this.persons.forEach((member) => {
+        this.members.forEach((member) => {
             if (member.id === id) {
                 result = member;
             }
@@ -121,15 +132,23 @@ export class DataBase {
         return result;
     }
 
-    setRental(isbn: number, serial: number, id: number): boolean {
+    setRental(isbn: number, serial: number, id: number, returnDate: Date): boolean {
       const bookDetail = this.getBookDetailByISBNSerial(isbn, serial);
       if (!bookDetail || bookDetail.status) {
         return false;
       } else {
         bookDetail.status = id;
         const now = new Date(Date.now());
-        bookDetail.date = now;
-        this.histories.push(new RentHistory(id, isbn, serial, 'rental', now));
+        bookDetail.rentalDate = now;
+        bookDetail.returnDate = returnDate;
+        this.histories.push({
+          id,
+          isbn,
+          serial,
+          type: 'rental',
+          date: now
+        });
+        // id, isbn, serial, 'rental', now
         return true;
       }
     }
@@ -140,29 +159,21 @@ export class DataBase {
         return false;
       } else {
         bookDetail.status = null;
-        bookDetail.date = null;
-        this.histories.push(new RentHistory(id, isbn, serial, 'return', new Date(Date.now())));
+        bookDetail.rentalDate = null;
+        bookDetail.returnDate = null;
+        this.histories.push(new RentHistory({
+          id,
+          isbn,
+          serial,
+          type: 'return',
+          date: new Date(Date.now())
+        }));
+        // id, isbn, serial, 'return', new Date(Date.now())
         return true;
       }
     }
+}
 
-    parse(json: object): void {
-      const DB = json as DataBase;
-      Object.keys(DB).forEach(k => {
-        DB[k].forEach(table => {
-          Object.keys(table).forEach(key => {
-            if (key === 'date') {
-              table.date = new Date(table.date);
-              if (table.date.toString() === 'Invalid Date') {
-                table.date = null;
-              }
-            }
-          });
-        });
-        console.log(DB[k]);
-        this[k] = DB[k];
-      });
-      console.log(this);
-      return;
-    }
+export class Message extends DataBase {
+  public message = '';
 }
