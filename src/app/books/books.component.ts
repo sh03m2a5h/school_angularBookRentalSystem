@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Book } from '../DataBase';
 import { DatabaseService } from '../database.service';
 
@@ -18,7 +18,7 @@ export class BooksComponent implements OnInit {
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    // this.getBooks();
+    this.getBooks();
   }
 
   getBooks(): void {
@@ -34,17 +34,7 @@ export class BooksComponent implements OnInit {
 
   delete(book: Book) {
     if (confirm('本当に削除しますか？')) {
-      let target = event.target as HTMLElement;
-      while (!target.tagName.includes('TR')) {
-        target = target.parentElement;
-      }
-      target.querySelector('td').replaceWith(document.createElement('td'));
-      target.remove();
-      this.books.forEach((targetBook, targetIdx) => {
-        if (targetBook === book) {
-          this.books.splice(targetIdx, 1);
-        }
-      });
+      this.databaseService.deleteBook(book);
     }
   }
 

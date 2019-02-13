@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DatabaseService} from '../database.service';
-import {Book, Member} from '../DataBase';
+import { Member} from '../DataBase';
 
 @Component({
   selector: 'app-person',
@@ -16,7 +16,7 @@ export class PersonComponent implements OnInit {
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    // this.getMember();
+    this.getMember();
     this.editingMember = new Member();
   }
 
@@ -35,28 +35,14 @@ export class PersonComponent implements OnInit {
     this.editingMember.email = person.email;
   }
 
-  save(person: Member) {
-    this.members.forEach((targetPerson, targetIdx) => {
-      if (targetPerson.id === person.id) {
-        this.members.splice(targetIdx, 1, this.editingMember);
-      }
-    });
+  save(): void {
+    this.databaseService.memberEditApply(this.editingMember);
     this.editingMember = new Member();
   }
 
   delete(members: Member) {
     if (confirm('本当に削除しますか？')) {
-      let target = event.target as HTMLElement;
-      while (!target.tagName.includes('TR')) {
-        target = target.parentElement;
-      }
-      target.querySelector('td').replaceWith(document.createElement('td'));
-      target.remove();
-      this.members.forEach((targetPerson, targetIdx) => {
-        if (targetPerson === members) {
-          this.members.splice(targetIdx, 1);
-        }
-      });
+      this.databaseService.deleteMember(members);
     }
   }
 
@@ -66,7 +52,6 @@ export class PersonComponent implements OnInit {
   }
 
   doRegister() {
-    this.registerMember.id = Number(this.registerMember.id);
     this.databaseService.addMember(this.registerMember);
     this.registerMember = new Member();
   }
