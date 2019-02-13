@@ -1,26 +1,33 @@
 import { Injectable } from '@angular/core';
-import {DataBase, Book, BookDetail, Member, RentHistory, Message} from './DataBase';
+import {DataBase, Book, BookDetail, Member, RentHistory, Message, reqtype} from './DataBase';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { WebSocketSubject } from 'rxjs/webSocket';
+import * as io from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
   private dataBase = new DataBase();
-  private url = 'https://script.google.com/macros/s/AKfycbxJYmI_uTpQdiF7-zorxZW8PnNp_QEXyi5RhtUMy-pvhtSZynf-/exec';
-  private socket: WebSocketSubject<Message>;
+  private socket;
 
   constructor(private http: HttpClient) {
-    this.socket = WebSocketSubject.create(`ws://${document.location.hostname}:8080`);
-
-    this.socket.subscribe((message) => {
-      console.log(message);
-    });
-    setInterval(() => {
+    this.socket = io(`ws://${document.location.hostname}:8080`);
+    this.socket.emit('get');
+    this.socket.on('set', (message: Message) => {
+      Object.keys(message).forEach((tablename) => {
+        if (typeof message[tablename] !== 'object') { return; }
+        (message[tablename] as Array<any>).forEach((row) => {
+          Object.keys(row).forEach((key) => {
+            if (/(D|d)ate/.test(key) && row[key]) {
+              row[key] = new Date(row[key]);
+            }
+          });
+        });
+      });
+      this.dataBase = message;
       console.log(this.dataBase);
-    }, 10000);
+    });
   }
 
   addBook(book: Book): boolean {
@@ -45,46 +52,18 @@ export class DatabaseService {
   }
 
   getBooks(): Observable<Book[]> {
-    let result: Observable<Book[]>;
-    if (!this.dataBase.books[0]) {
-      result = this.http.get<Book[]>(this.url + '?table=books');
-      result.subscribe(books => this.dataBase.books = books);
-    } else {
-      result = of(this.dataBase.books);
-    }
-    return result;
+    return of(this.dataBase.books);
   }
 
   getMembers(): Observable<Member[]> {
-    let result: Observable<Member[]>;
-    if (!this.dataBase.members[0]) {
-      result = this.http.get<Member[]>(this.url + '?table=persons');
-      result.subscribe(members => this.dataBase.members = members);
-    } else {
-      result = of(this.dataBase.members);
-    }
-    return result;
+    return of(this.dataBase.members);
   }
 
   getBookDetails(): Observable<BookDetail[]> {
-    let result: Observable<BookDetail[]>;
-    if (!this.dataBase.bookDetails[0]) {
-      result = this.http.get<BookDetail[]>(this.url + '?table=bookDetails');
-      result.subscribe(bookDetails => this.dataBase.bookDetails = bookDetails);
-    } else {
-      result = of(this.dataBase.bookDetails);
-    }
-    return result;
+    return of(this.dataBase.bookDetails);
   }
 
   getHistories(): Observable<RentHistory[]> {
-    let result: Observable<RentHistory[]>;
-    if (!this.dataBase.histories[0]) {
-      result = this.http.get<RentHistory[]>(this.url + '?table=histories');
-      result.subscribe(histories => this.dataBase.histories = histories);
-    } else {
-      result = of(this.dataBase.histories);
-    }
-    return result;
+    return of(this.dataBase.histories);
   }
 }

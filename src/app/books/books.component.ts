@@ -18,7 +18,7 @@ export class BooksComponent implements OnInit {
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    this.getBooks();
+    // this.getBooks();
   }
 
   getBooks(): void {

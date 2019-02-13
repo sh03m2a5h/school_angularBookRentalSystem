@@ -13,7 +13,7 @@ export class HistoryComponent implements OnInit {
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    this.getHistories();
+    // this.getHistories();
   }
 
   getHistories(): void {

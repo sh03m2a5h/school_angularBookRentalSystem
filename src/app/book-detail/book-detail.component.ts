@@ -22,7 +22,7 @@ export class BookDetailComponent implements OnInit {
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    this.getBookDetails();
+    // this.getBookDetails();
   }
 
   getBookDetails() {

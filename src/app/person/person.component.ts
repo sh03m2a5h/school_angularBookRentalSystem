@@ -16,7 +16,7 @@ export class PersonComponent implements OnInit {
   constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    this.getMember();
+    // this.getMember();
     this.editingMember = new Member();
   }
 

@@ -173,7 +173,9 @@ export class DataBase {
       }
     }
 }
-
+export enum reqtype {
+  get, set, update, delete, append
+}
 export class Message extends DataBase {
-  public message = '';
+  public message: reqtype;
 }
