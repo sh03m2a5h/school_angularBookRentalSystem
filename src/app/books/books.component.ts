@@ -52,12 +52,8 @@ export class BooksComponent implements OnInit {
     this.editingBook.date = new Date(date);
   }
 
-  save(book: Book) {
-    this.books.forEach((targetBook, targetIdx) => {
-      if (targetBook.isbn === book.isbn) {
-        this.books.splice(targetIdx, 1, this.editingBook);
-      }
-    });
+  save() {
+    this.databaseService.bookEditApply(this.editingBook);
     this.editingBook = new Book();
   }
 

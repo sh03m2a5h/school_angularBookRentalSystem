@@ -23,6 +23,7 @@ export class BookDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getBookDetails();
+    console.log('bookChanged');
   }
 
   getBookDetails() {

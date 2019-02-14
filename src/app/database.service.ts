@@ -25,6 +25,12 @@ export class DatabaseService {
       dispatchEvent(this.onAppend);
       console.log(this.dataBase);
     });
+    this.socket.on('drop', (message: DataBase) => {
+      this.delMatch(message);
+    });
+    this.socket.on('update', (message: DataBase) => {
+      this.updateMatch(message);
+    });
   }
 
   dateIsDate(obj: object): void {
@@ -59,6 +65,22 @@ export class DatabaseService {
     });
   }
 
+  bookEditApply(book: Book) {
+    this.dataBase.books.forEach( (targetBook, targetIdx) => {
+      if (targetBook.isbn === book.isbn) {
+        this.dataBase.books.splice(targetIdx, 1, book);
+      }
+    });
+  }
+
+  bookDetailEditApply(bookDetail: BookDetail) {
+    this.dataBase.bookDetails.forEach( (targetBookDetail, targetIdx) => {
+      if (targetBookDetail.isbn === bookDetail.isbn && targetBookDetail.serial === bookDetail.serial) {
+        this.dataBase.bookDetails.splice(targetIdx, 1, bookDetail);
+      }
+    });
+  }
+
   addMember(member: Member): void {
     // this.dataBase.generateMemberId(member);
     this.dataBase.addMember(member);
@@ -76,6 +98,30 @@ export class DatabaseService {
         resolve();
       }, {once: true});
       this.socket.emit('append', request);
+    });
+  }
+
+  private updateMatch(updateDB: DataBase): void {
+    updateDB.books.forEach((updateBook) => {
+      this.bookEditApply(updateBook);
+    });
+    updateDB.bookDetails.forEach((updateBookDetail) => {
+      this.bookDetailEditApply(updateBookDetail);
+    });
+    updateDB.members.forEach((updateMember) => {
+      this.memberEditApply(updateMember);
+    });
+  }
+
+  delMatch(deleteDB: DataBase): void {
+    deleteDB.books.forEach((delBook) => {
+      this.deleteBook(delBook);
+    });
+    deleteDB.bookDetails.forEach((delBookDetail) => {
+      this.deleteBookDetail(delBookDetail);
+    });
+    deleteDB.members.forEach((delMember) => {
+      this.deleteMember(delMember);
     });
   }
 

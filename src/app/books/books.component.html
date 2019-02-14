@@ -27,7 +27,7 @@
         </ng-container>
         <td>
           <a (click)="edit(book)" *ngIf="editingBook.isbn!==book.isbn">編集</a>
-          <a (click)="save(book)" *ngIf="editingBook.isbn===book.isbn">保存</a>
+          <a (click)="save()" *ngIf="editingBook.isbn===book.isbn">保存</a>
           /
           <a (click)="delete(book)">削除</a>
         </td>
