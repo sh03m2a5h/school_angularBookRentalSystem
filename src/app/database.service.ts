@@ -10,6 +10,7 @@ export class DatabaseService {
   private dataBase = new DataBase();
   private socket;
   private onAppend = new Event('onAppend');
+  private onDrop = new Event('onDrop');
 
   constructor() {
     this.socket = io(`ws://${document.location.hostname}:8080`);
@@ -27,8 +28,10 @@ export class DatabaseService {
     });
     this.socket.on('drop', (message: DataBase) => {
       this.delMatch(message);
+      dispatchEvent(this.onDrop);
     });
     this.socket.on('update', (message: DataBase) => {
+      this.dateIsDate(message);
       this.updateMatch(message);
     });
   }
@@ -44,6 +47,10 @@ export class DatabaseService {
         });
       });
     });
+  }
+
+  addEventListener(type: string, listener: EventListener|EventListenerObject, options?: boolean|AddEventListenerOptions) {
+    addEventListener(type, listener, options);
   }
 
   addBook(book: Book): boolean {
