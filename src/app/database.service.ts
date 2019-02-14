@@ -51,34 +51,11 @@ export class DatabaseService {
       // this.dataBase.addBook(book);
       const request = new DataBase();
       request.addBook(book);
+      console.log(request);
       this.socket.emit('append', request);
       return true;
     }
     return false;
-  }
-
-  memberEditApply(member: Member): void {
-    this.dataBase.members.forEach((targetPerson, targetIdx) => {
-      if (targetPerson.id === member.id) {
-        this.dataBase.members.splice(targetIdx, 1, member);
-      }
-    });
-  }
-
-  bookEditApply(book: Book) {
-    this.dataBase.books.forEach( (targetBook, targetIdx) => {
-      if (targetBook.isbn === book.isbn) {
-        this.dataBase.books.splice(targetIdx, 1, book);
-      }
-    });
-  }
-
-  bookDetailEditApply(bookDetail: BookDetail) {
-    this.dataBase.bookDetails.forEach( (targetBookDetail, targetIdx) => {
-      if (targetBookDetail.isbn === bookDetail.isbn && targetBookDetail.serial === bookDetail.serial) {
-        this.dataBase.bookDetails.splice(targetIdx, 1, bookDetail);
-      }
-    });
   }
 
   addMember(member: Member): void {
@@ -91,62 +68,122 @@ export class DatabaseService {
 
   addBookDetail(bookDetail: BookDetail): Promise<null> {
     return new Promise((resolve, reject) => {
-      this.dataBase.addBookDetail(bookDetail);
+      // this.dataBase.addBookDetail(bookDetail);
       const request = new DataBase();
       request.addBookDetail(bookDetail);
       addEventListener('onAppend', () => {
         resolve();
       }, {once: true});
+      console.log(request);
       this.socket.emit('append', request);
+    });
+  }
+
+  memberUpdateApply(member: Member): void {
+    this.dataBase.members.forEach((targetPerson, targetIdx) => {
+      if (targetPerson.id === member.id) {
+        this.dataBase.members.splice(targetIdx, 1, member);
+        const request = new DataBase();
+        request.addMember(member);
+        this.socket.emit('update', request);
+        return true;
+      }
+    });
+  }
+
+  bookUpdateApply(book: Book) {
+    this.dataBase.books.forEach( (targetBook, targetIdx) => {
+      if (targetBook.isbn === book.isbn) {
+        this.dataBase.books.splice(targetIdx, 1, book);
+      }
+    });
+  }
+
+  bookDetailUpdateApply(bookDetail: BookDetail) {
+    this.dataBase.bookDetails.forEach( (targetBookDetail, targetIdx) => {
+      if (targetBookDetail.isbn === bookDetail.isbn && targetBookDetail.serial === bookDetail.serial) {
+        this.dataBase.bookDetails.splice(targetIdx, 1, bookDetail);
+      }
     });
   }
 
   private updateMatch(updateDB: DataBase): void {
     updateDB.books.forEach((updateBook) => {
-      this.bookEditApply(updateBook);
+      this.bookUpdateApply(updateBook);
     });
     updateDB.bookDetails.forEach((updateBookDetail) => {
-      this.bookDetailEditApply(updateBookDetail);
+      this.bookDetailUpdateApply(updateBookDetail);
     });
     updateDB.members.forEach((updateMember) => {
-      this.memberEditApply(updateMember);
+      this.memberUpdateApply(updateMember);
     });
+  }
+
+  bookEditApply(editingBook: Book) {
+    const request = new DataBase();
+    request.addBook(editingBook);
+    this.socket.emit('update', request);
+  }
+
+  memberEditApply(editingMember: Member) {
+    const request = new DataBase();
+    request.addMember(editingMember);
+    this.socket.emit('update', request);
   }
 
   delMatch(deleteDB: DataBase): void {
     deleteDB.books.forEach((delBook) => {
-      this.deleteBook(delBook);
+      this.dataBase.books.forEach((targetBook, targetIdx) => {
+        if (targetBook.isbn === delBook.isbn) {
+          this.dataBase.books.splice(targetIdx, 1);
+        }
+      });
     });
     deleteDB.bookDetails.forEach((delBookDetail) => {
-      this.deleteBookDetail(delBookDetail);
+      this.dataBase.bookDetails.forEach((targetBookDetail, targetIdx) => {
+        if (targetBookDetail.isbn === delBookDetail.isbn && targetBookDetail.serial === delBookDetail.serial) {
+          this.dataBase.bookDetails.splice(targetIdx, 1);
+        }
+      });
     });
     deleteDB.members.forEach((delMember) => {
-      this.deleteMember(delMember);
+      this.dataBase.members.forEach((targetPerson, targetIdx) => {
+        if (targetPerson.id === delMember.id) {
+          this.dataBase.members.splice(targetIdx, 1);
+        }
+      });
     });
   }
 
   deleteMember(member: Member): void {
-    this.dataBase.members.forEach((targetPerson, targetIdx) => {
-      if (targetPerson === member) {
-        this.dataBase.members.splice(targetIdx, 1);
-      }
-    });
+    const request = new DataBase();
+    request.addMember(member);
+    this.socket.emit('drop', request);
   }
 
   deleteBook(book: Book): void {
-    this.dataBase.books.forEach((targetBook, targetIdx) => {
-      if (targetBook === book) {
-        this.dataBase.books.splice(targetIdx, 1);
-      }
+    const request = new DataBase();
+    this.getBookDetailsByIsbn(book.isbn).forEach((bookDetail) => {
+      request.addBookDetail(bookDetail);
     });
+    request.addBook(book);
+    this.socket.emit('drop', request);
   }
 
   deleteBookDetail(bookDetail: BookDetail): void {
-    this.dataBase.bookDetails.forEach((targetBookDetail, targetIdx) => {
-      if (targetBookDetail.isbn === bookDetail.isbn && targetBookDetail.serial === bookDetail.serial) {
-        this.dataBase.bookDetails.splice(targetIdx, 1);
+    const request = new DataBase();
+    request.addBookDetail(bookDetail);
+    this.socket.emit('drop', request);
+  }
+
+  getBookDetailsByIsbn(isbn: number): BookDetail[] {
+    const result = new Array<BookDetail>();
+    this.dataBase.bookDetails.forEach((bookDetail) => {
+      if (bookDetail.isbn === isbn) {
+        result.push(bookDetail);
       }
     });
+    return result;
   }
 
   setRental(isbn: number, serial: number, id: number, returnDate: Date): boolean {

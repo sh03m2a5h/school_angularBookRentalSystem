@@ -27,25 +27,27 @@ export class BookDetailComponent implements OnInit {
   }
 
   getBookDetails() {
-    this.databaseService.getBookDetails().subscribe(bookDetails => this.bookDetails = bookDetails);
-    this.selectedBookDetail = new Array<BookDetail>();
-    for (const bookDetail of this.bookDetails) {
-      if (bookDetail.isbn === this.selectedBook.isbn) {
-        this.selectedBookDetail.push(bookDetail);
+    this.databaseService.getBookDetails().subscribe(bookDetails => {
+      this.bookDetails = bookDetails;
+      this.selectedBookDetail = new Array<BookDetail>();
+      for (const bookDetail of this.bookDetails) {
+        if (bookDetail.isbn === this.selectedBook.isbn) {
+          this.selectedBookDetail.push(bookDetail);
+        }
       }
-    }
+    });
   }
 
   showRegister() {
     this.registerForm = !this.registerForm;
     this.registerBookDetail = new BookDetail();
+    this.registerBookDetail.isbn = this.selectedBook.isbn;
   }
 
-  doRegister() {
-    this.databaseService.addBookDetail(this.registerBookDetail).then(() => {
-      this.getBookDetails();
-      this.registerBookDetail = new BookDetail();
-    });
+  async doRegister() {
+    await this.databaseService.addBookDetail(this.registerBookDetail);
+    this.getBookDetails();
+    this.registerBookDetail = new BookDetail();
   }
 
   delete(bookDetail: BookDetail) {
