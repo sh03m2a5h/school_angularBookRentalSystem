@@ -21,14 +21,16 @@ export class RentalComponent implements OnInit {
 
 
   rentals() {
-    if (!this.databaseService.setRental(Number(this.bookIsbn), Number(this.bookSerial), Number(this.memberId), new Date())) {
-      alert('レンタルに失敗しました。どれかが存在しないか借りられてます');
-    }
+    this.databaseService.setRental(Number(this.bookIsbn), Number(this.bookSerial), Number(this.memberId), new Date())
+      .catch(() => {
+        alert('レンタルに失敗しました。どれかが存在しないか借りられてます');
+      });
   }
 
   returns() {
-    if (!this.databaseService.setReturn(Number(this.bookIsbn), Number(this.bookSerial), Number(this.memberId))) {
-      alert('返却に失敗しました。どれかが存在しないか実は借りてません');
-    }
+    this.databaseService.setReturn(Number(this.bookIsbn), Number(this.bookSerial), Number(this.memberId))
+      .catch(() => {
+        alert('返却に失敗しました。どれかが存在しないか実は借りてません');
+      });
   }
 }

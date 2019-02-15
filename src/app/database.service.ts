@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DataBase, Book, BookDetail, Member, RentHistory } from './DataBase';
 import { Observable, of } from 'rxjs';
 import * as io from 'socket.io-client';
+import {promise} from 'selenium-webdriver';
 
 @Injectable({
   providedIn: 'root'
@@ -17,22 +18,24 @@ export class DatabaseService {
     this.socket.emit('get');
     this.socket.on('set', (message: DataBase) => {
       this.dateIsDate(message);
-      this.dataBase.append(message);
+      this.first(message);
       console.log(this.dataBase);
     });
     this.socket.on('append', (message: DataBase) => {
       this.dateIsDate(message);
-      this.dataBase.append(message);
+      this.append(message);
       dispatchEvent(this.onAppend);
       console.log(this.dataBase);
     });
     this.socket.on('drop', (message: DataBase) => {
       this.delMatch(message);
       dispatchEvent(this.onDrop);
+      console.log(this.dataBase);
     });
     this.socket.on('update', (message: DataBase) => {
       this.dateIsDate(message);
       this.updateMatch(message);
+      console.log(this.dataBase);
     });
   }
 
@@ -47,6 +50,19 @@ export class DatabaseService {
         });
       });
     });
+  }
+
+  first(appendDB: DataBase): void {
+    Array.prototype.push.apply(this.dataBase.books, appendDB.books);
+    Array.prototype.push.apply(this.dataBase.bookDetails, appendDB.bookDetails);
+    Array.prototype.push.apply(this.dataBase.members, appendDB.members);
+    Array.prototype.push.apply(this.dataBase.histories, appendDB.histories);
+  }
+
+  append(appendDB: DataBase): void {
+    Array.prototype.push.apply(this.dataBase.books, appendDB.books);
+    Array.prototype.push.apply(this.dataBase.members, appendDB.members);
+    Array.prototype.push.apply(this.dataBase.bookDetails, appendDB.bookDetails);
   }
 
   addEventListener(type: string, listener: EventListener|EventListenerObject, options?: boolean|AddEventListenerOptions) {
@@ -124,6 +140,9 @@ export class DatabaseService {
     updateDB.members.forEach((updateMember) => {
       this.memberUpdateApply(updateMember);
     });
+    updateDB.histories.forEach((history) => {
+      this.dataBase.histories.push(history);
+    });
   }
 
   bookEditApply(editingBook: Book) {
@@ -193,12 +212,37 @@ export class DatabaseService {
     return result;
   }
 
-  setRental(isbn: number, serial: number, id: number, returnDate: Date): boolean {
-    return this.dataBase.setRental(isbn, serial, id, returnDate);
+  setRental(isbn: number, serial: number, id: number, returnDate: Date): Promise<null> {
+    // this.dataBase.setRental(isbn, serial, id, returnDate);
+    return new Promise((resolve, reject) => {
+      const request = new DataBase();
+      request.addBookDetail(this.dataBase.getBookDetailByISBNSerial(isbn, serial));
+      request.setRental(isbn, serial, id, returnDate);
+      this.socket.emit('update', request);
+      console.log(request);
+      addEventListener('update', () => {
+        resolve();
+      }, { once: true});
+      addEventListener('err', () => {
+        reject();
+      }, { once: true});
+    });
   }
 
-  setReturn(isbn: number, serial: number, id: number): boolean {
-    return this.dataBase.setReturn(isbn, serial, id);
+  setReturn(isbn: number, serial: number, id: number): Promise<null> {
+    // return this.dataBase.setReturn(isbn, serial, id);
+    return new Promise((resolve, reject) => {
+      const request = new DataBase();
+      request.addBookDetail(this.dataBase.getBookDetailByISBNSerial(isbn, serial));
+      request.setReturn(isbn, serial, id);
+      this.socket.emit('update', request);
+      addEventListener('update', () => {
+        resolve();
+      }, { once: true});
+      addEventListener('err', () => {
+        reject();
+      }, { once: true});
+    });
   }
 
   getBooks(): Observable<Book[]> {

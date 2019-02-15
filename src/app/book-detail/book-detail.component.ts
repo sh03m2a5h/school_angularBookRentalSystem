@@ -23,8 +23,8 @@ export class BookDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getBookDetails();
-    this.databaseService.addEventListener('onAppend', this.getBookDetails);
-    this.databaseService.addEventListener('onDrop', this.getBookDetails);
+    this.databaseService.addEventListener('onAppend', () => {this.getBookDetails(); });
+    this.databaseService.addEventListener('onDrop', () => {this.getBookDetails(); });
     console.log('bookChanged');
   }
 

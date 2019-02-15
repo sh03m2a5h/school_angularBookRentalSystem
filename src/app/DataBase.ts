@@ -112,13 +112,6 @@ export class DataBase {
     }
   }
 
-  append(appendDB: DataBase): void {
-    Array.prototype.push.apply(this.books, appendDB.books);
-    Array.prototype.push.apply(this.bookDetails, appendDB.bookDetails);
-    Array.prototype.push.apply(this.histories, appendDB.histories);
-    Array.prototype.push.apply(this.members, appendDB.members);
-  }
-
   generateMemberId(member: Member): void {
     let idBuff: number;
     do {
@@ -148,20 +141,20 @@ export class DataBase {
   }
 
   getBookDetailByISBNSerial(isbn: number, serial: number): BookDetail {
-    let result: BookDetail = null;
-    this.bookDetails.forEach((bookDetail) => {
+    for (const bookDetail of this.bookDetails) {
       if (bookDetail.isbn === isbn && bookDetail.serial === serial) {
-        result = bookDetail;
+        return bookDetail;
       }
-    });
-    return result;
+    }
   }
 
   setRental(isbn: number, serial: number, id: number, returnDate: Date): boolean {
     const bookDetail = this.getBookDetailByISBNSerial(isbn, serial);
     if (!bookDetail || bookDetail.status) {
+      console.log('false');
       return false;
     } else {
+      console.log('true');
       bookDetail.status = id;
       const now = new Date(Date.now());
       bookDetail.rentalDate = now;
