@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {DatabaseService} from '../database.service';
 import { Member} from '../DataBase';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-person',
@@ -13,7 +14,7 @@ export class PersonComponent implements OnInit {
   registerMember: Member;
   registerForm: boolean;
 
-  constructor(private databaseService: DatabaseService) { }
+  constructor(private databaseService: DatabaseService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.getMember();

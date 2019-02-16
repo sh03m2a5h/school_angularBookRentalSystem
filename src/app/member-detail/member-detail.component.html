@@ -1,0 +1,24 @@
+<ng-container *ngIf="member">
+  <h1>{{member.name}} さんの詳細</h1>
+  <ul>
+    <li><span>住所:</span>{{member.address}}</li>
+    <li><span>メールアドレス:</span>{{member.email}}</li>
+  </ul>
+  <table *ngIf="rentBooks[0].book">
+    <caption>レンタル中の本</caption>
+    <thead>
+      <tr>
+        <th>ISBN</th>
+        <th>タイトル</th>
+        <th>シリアル</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let bookView of rentBooks">
+        <td>{{bookView.bookDetail.isbn}}</td>
+        <td>{{bookView.book.title}}</td>
+        <td>{{bookView.bookDetail.serial}}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>

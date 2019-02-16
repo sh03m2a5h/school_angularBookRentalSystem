@@ -10,6 +10,7 @@ const routes: Routes = [
   {path: 'books', component: BooksComponent},
   {path: 'books/:isbn', component: BooksComponent},
   {path: 'members', component: PersonComponent},
+  {path: 'members/:id', component: PersonComponent},
   {path: 'history', component: HistoryComponent},
   {path: 'rental', component: RentalComponent}
 ];

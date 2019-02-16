@@ -11,7 +11,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let person of members">
-      <td>{{person.id}}</td>
+      <td [routerLink]="['/members',person.id]">{{person.id}}</td>
       <ng-container *ngIf="editingMember.id!==person.id">
         <td>{{person.name}}</td>
         <!--<td>{{person.address}}</td>-->
@@ -46,3 +46,4 @@
   </tr>
   </tfoot>
 </table>
+<app-member-detail></app-member-detail>

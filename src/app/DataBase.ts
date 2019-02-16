@@ -148,6 +148,16 @@ export class DataBase {
     }
   }
 
+  getBookDetailsByState(state: number): Array<BookDetail> {
+    const result = new Array<BookDetail>();
+    for (const bookDetail of this.bookDetails) {
+      if (bookDetail.status === state) {
+        result.push(bookDetail);
+      }
+    }
+    return result;
+  }
+
   setRental(isbn: number, serial: number, id: number, returnDate: Date): boolean {
     const bookDetail = this.getBookDetailByISBNSerial(isbn, serial);
     if (!bookDetail || bookDetail.status) {

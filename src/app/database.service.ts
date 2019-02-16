@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { DataBase, Book, BookDetail, Member, RentHistory } from './DataBase';
-import { Observable, of } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {DataBase, Book, BookDetail, Member, RentHistory} from './DataBase';
+import {Observable, of} from 'rxjs';
 import * as io from 'socket.io-client';
 import {promise} from 'selenium-webdriver';
 
@@ -43,7 +43,9 @@ export class DatabaseService {
 
   dateIsDate(obj: object): void {
     Object.keys(obj).forEach((tablename) => {
-      if (typeof obj[tablename] !== 'object') { return; }
+      if (typeof obj[tablename] !== 'object') {
+        return;
+      }
       (obj[tablename] as Array<any>).forEach((row) => {
         Object.keys(row).forEach((key) => {
           if (/([Dd])ate/.test(key) && row[key]) {
@@ -67,7 +69,7 @@ export class DatabaseService {
     Array.prototype.push.apply(this.dataBase.bookDetails, appendDB.bookDetails);
   }
 
-  addEventListener(type: string, listener: EventListener|EventListenerObject, options?: boolean|AddEventListenerOptions) {
+  addEventListener(type: string, listener: EventListener | EventListenerObject, options?: boolean | AddEventListenerOptions) {
     addEventListener(type, listener, options);
   }
 
@@ -117,7 +119,7 @@ export class DatabaseService {
   }
 
   bookUpdateApply(book: Book) {
-    this.dataBase.books.forEach( (targetBook, targetIdx) => {
+    this.dataBase.books.forEach((targetBook, targetIdx) => {
       if (targetBook.isbn === book.isbn) {
         this.dataBase.books.splice(targetIdx, 1, book);
       }
@@ -125,7 +127,7 @@ export class DatabaseService {
   }
 
   bookDetailUpdateApply(bookDetail: BookDetail) {
-    this.dataBase.bookDetails.forEach( (targetBookDetail, targetIdx) => {
+    this.dataBase.bookDetails.forEach((targetBookDetail, targetIdx) => {
       if (targetBookDetail.isbn === bookDetail.isbn && targetBookDetail.serial === bookDetail.serial) {
         this.dataBase.bookDetails.splice(targetIdx, 1, bookDetail);
       }
@@ -190,12 +192,14 @@ export class DatabaseService {
   }
 
   deleteBook(book: Book): void {
-    const request = new DataBase();
-    this.getBookDetailsByIsbn(book.isbn).forEach((bookDetail) => {
-      request.addBookDetail(bookDetail);
+    this.getBookDetailsByIsbn(book.isbn).then((bookDetails: Array<BookDetail>) => {
+      const request = new DataBase();
+      for (const bookDetail of bookDetails) {
+        request.addBookDetail(bookDetail);
+        request.addBook(book);
+        this.socket.emit('drop', request);
+      }
     });
-    request.addBook(book);
-    this.socket.emit('drop', request);
   }
 
   deleteBookDetail(bookDetail: BookDetail): void {
@@ -204,14 +208,37 @@ export class DatabaseService {
     this.socket.emit('drop', request);
   }
 
-  getBookDetailsByIsbn(isbn: number): BookDetail[] {
-    const result = new Array<BookDetail>();
-    this.dataBase.bookDetails.forEach((bookDetail) => {
-      if (bookDetail.isbn === isbn) {
-        result.push(bookDetail);
+  getBookDetailsByIsbn(isbn: number) {
+    const get = () => {
+      const result = new Array<BookDetail>();
+      this.dataBase.bookDetails.forEach((bookDetail) => {
+        if (bookDetail.isbn === isbn) {
+          result.push(bookDetail);
+        }
+      });
+      return result;
+    };
+    return new Promise((resolve, reject) => {
+      if (this.dataBase.bookDetails[0]) {
+        resolve(get());
+      } else {
+        addEventListener('onSet', () => {
+          resolve(get());
+        }, {once: true});
       }
     });
-    return result;
+  }
+
+  getMemberById(id: number): Promise<Member> {
+    return new Promise((resolve, reject) => {
+      if (this.dataBase.members[0]) {
+        resolve(this.dataBase.getMemberById(id));
+      } else {
+        addEventListener('onSet', () => {
+          resolve(this.getMemberById(id));
+        }, {once: true});
+      }
+    });
   }
 
   setRental(isbn: number, serial: number, id: number, returnDate: Date): Promise<null> {
@@ -224,10 +251,10 @@ export class DatabaseService {
       console.log(request);
       addEventListener('update', () => {
         resolve();
-      }, { once: true});
+      }, {once: true});
       addEventListener('err', () => {
         reject();
-      }, { once: true});
+      }, {once: true});
     });
   }
 
@@ -240,14 +267,17 @@ export class DatabaseService {
       this.socket.emit('update', request);
       addEventListener('update', () => {
         resolve();
-      }, { once: true});
+      }, {once: true});
       addEventListener('err', () => {
         reject();
-      }, { once: true});
+      }, {once: true});
     });
   }
 
   getBooks(): Observable<Book[]> {
+    if (this.dataBase.books[0]) {
+      dispatchEvent(this.onSet);
+    }
     return of(this.dataBase.books);
   }
 
@@ -257,6 +287,18 @@ export class DatabaseService {
 
   getBookDetails(): Observable<BookDetail[]> {
     return of(this.dataBase.bookDetails);
+  }
+
+  getBookDetailsByState(state: number): Promise<Array<BookDetail>> {
+    return new Promise((resolve, reject) => {
+      if (this.dataBase.bookDetails[0]) {
+        resolve(this.dataBase.getBookDetailsByState(state));
+      } else {
+        addEventListener('onSet', () => {
+          resolve(this.dataBase.getBookDetailsByState(state));
+        }, {once: true});
+      }
+    });
   }
 
   getHistories(): Observable<RentHistory[]> {

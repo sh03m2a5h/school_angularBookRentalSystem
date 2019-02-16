@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Book, BookDetail} from '../DataBase';
 import {DatabaseService} from '../database.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-book-detail',
@@ -8,42 +9,36 @@ import {DatabaseService} from '../database.service';
   styleUrls: ['./book-detail.component.css']
 })
 export class BookDetailComponent implements OnInit {
-  selectedBook: Book;
+  selectedIsbn: number;
   registerBookDetail: BookDetail;
-  @Input('selectedBook')
-  set updateSelectedBook(Value: Book) {
-    this.selectedBook = Value;
-    this.getBookDetails();
-  }
-  bookDetails: BookDetail[];
   selectedBookDetail: BookDetail[];
   registerForm: boolean;
 
-  constructor(private databaseService: DatabaseService) { }
+  constructor(private databaseService: DatabaseService, private  route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.getBookDetails();
-    this.databaseService.addEventListener('onAppend', () => {this.getBookDetails(); });
-    this.databaseService.addEventListener('onDrop', () => {this.getBookDetails(); });
+    this.route.params.subscribe((params) => {
+      console.log(params);
+      if (params.isbn) {
+        this.selectedIsbn = +params.isbn;
+        this.getBookDetails();
+        this.databaseService.addEventListener('onAppend', () => {this.getBookDetails(); });
+        this.databaseService.addEventListener('onDrop', () => {this.getBookDetails(); });
+      }
+    });
     console.log('bookChanged');
   }
 
   getBookDetails() {
-    this.databaseService.getBookDetails().subscribe(bookDetails => {
-      this.bookDetails = bookDetails;
-      this.selectedBookDetail = new Array<BookDetail>();
-      for (const bookDetail of this.bookDetails) {
-        if (bookDetail.isbn === this.selectedBook.isbn) {
-          this.selectedBookDetail.push(bookDetail);
-        }
-      }
+    this.databaseService.getBookDetailsByIsbn(this.selectedIsbn).then((bookDetail: Array<BookDetail>) => {
+      this.selectedBookDetail = bookDetail;
     });
   }
 
   showRegister() {
     this.registerForm = !this.registerForm;
     this.registerBookDetail = new BookDetail();
-    this.registerBookDetail.isbn = this.selectedBook.isbn;
+    this.registerBookDetail.isbn = this.selectedIsbn;
   }
 
   async doRegister() {

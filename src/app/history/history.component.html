@@ -10,9 +10,9 @@
   </thead>
   <tbody>
     <tr *ngFor="let history of histories">
-      <td><a [routerLink]="['/books',history.isbn]">{{history.isbn}}</a></td>
+      <td [routerLink]="['/books',history.isbn]">{{history.isbn}}</td>
       <td>{{history.serial}}</td>
-      <td>{{history.id}}</td>
+      <td [routerLink]="['/members',history.id]">{{history.id}}</td>
       <td>{{history.type}}</td>
       <td>{{history.date | date:'yy年MM月dd日'}}</td>
     </tr>

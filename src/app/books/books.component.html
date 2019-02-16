@@ -12,7 +12,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let book of books" (click)="selectedBook=book">
+    <tr *ngFor="let book of books" [routerLink]="['/books',book.isbn]">
       <ng-container *ngIf="search(book)">
         <td>{{book.isbn}}</td>
         <ng-container *ngIf="editingBook.isbn!==book.isbn">
@@ -47,4 +47,4 @@
     </tr>
   </tfoot>
 </table>
-<app-book-detail *ngIf="selectedBook" [selectedBook]="selectedBook"></app-book-detail>
+<app-book-detail></app-book-detail>

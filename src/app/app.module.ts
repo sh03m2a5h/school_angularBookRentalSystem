@@ -10,6 +10,7 @@ import { HistoryComponent } from './history/history.component';
 import { RentalComponent } from './rental/rental.component';
 import { FormsModule } from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+import { MemberDetailComponent } from './member-detail/member-detail.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {HttpClientModule} from '@angular/common/http';
     BookDetailComponent,
     PersonComponent,
     HistoryComponent,
-    RentalComponent
+    RentalComponent,
+    MemberDetailComponent
   ],
   imports: [
     BrowserModule,

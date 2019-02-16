@@ -17,23 +17,9 @@ export class BooksComponent implements OnInit {
   isbn: number;
   registerForm: boolean;
 
-  constructor(private databaseService: DatabaseService, private route: ActivatedRoute) { }
+  constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
-    this.route.params.subscribe((params) => {
-      console.log(params);
-      if (!this.books) {
-        this.databaseService.addEventListener('onSet', () => {
-          if (params.isbn) {
-            this.selectedBook = this.databaseService.getBookByIsbn(Number(params.isbn));
-          }
-        }, {once: true});
-      } else {
-        if (params.isbn) {
-          this.selectedBook = this.databaseService.getBookByIsbn(Number(params.isbn));
-        }
-      }
-    });
     this.getBooks();
   }
 
