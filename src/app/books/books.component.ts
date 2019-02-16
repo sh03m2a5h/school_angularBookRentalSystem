@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Book } from '../DataBase';
 import { DatabaseService } from '../database.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-books',
@@ -13,11 +14,26 @@ export class BooksComponent implements OnInit {
   searchText = '';
   registerBook: Book;
   selectedBook: Book;
+  isbn: number;
   registerForm: boolean;
 
-  constructor(private databaseService: DatabaseService) { }
+  constructor(private databaseService: DatabaseService, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.route.params.subscribe((params) => {
+      console.log(params);
+      if (!this.books) {
+        this.databaseService.addEventListener('onSet', () => {
+          if (params.isbn) {
+            this.selectedBook = this.databaseService.getBookByIsbn(Number(params.isbn));
+          }
+        }, {once: true});
+      } else {
+        if (params.isbn) {
+          this.selectedBook = this.databaseService.getBookByIsbn(Number(params.isbn));
+        }
+      }
+    });
     this.getBooks();
   }
 

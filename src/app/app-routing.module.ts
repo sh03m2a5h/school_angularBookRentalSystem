@@ -8,6 +8,7 @@ import {RentalComponent} from './rental/rental.component';
 const routes: Routes = [
   {path: '', redirectTo: '/books', pathMatch: 'full'},
   {path: 'books', component: BooksComponent},
+  {path: 'books/:isbn', component: BooksComponent},
   {path: 'members', component: PersonComponent},
   {path: 'history', component: HistoryComponent},
   {path: 'rental', component: RentalComponent}

@@ -12,6 +12,7 @@ export class DatabaseService {
   private socket;
   private onAppend = new Event('onAppend');
   private onDrop = new Event('onDrop');
+  private onSet = new Event('onSet');
 
   constructor() {
     this.socket = io(`ws://${document.location.hostname}:8080`);
@@ -19,6 +20,7 @@ export class DatabaseService {
     this.socket.on('set', (message: DataBase) => {
       this.dateIsDate(message);
       this.first(message);
+      dispatchEvent(this.onSet);
       console.log(this.dataBase);
     });
     this.socket.on('append', (message: DataBase) => {
@@ -259,5 +261,9 @@ export class DatabaseService {
 
   getHistories(): Observable<RentHistory[]> {
     return of(this.dataBase.histories);
+  }
+
+  getBookByIsbn(isbn: number) {
+    return this.dataBase.getBookByISBN(isbn);
   }
 }
