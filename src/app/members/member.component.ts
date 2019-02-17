@@ -1,20 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import {DatabaseService} from '../database.service';
 import { Member} from '../DataBase';
-import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'app-person',
-  templateUrl: './person.component.html',
-  styleUrls: ['./person.component.css']
+  selector: 'app-member',
+  templateUrl: './member.component.html',
+  styleUrls: ['./member.component.css']
 })
-export class PersonComponent implements OnInit {
+export class MemberComponent implements OnInit {
   members: Member[];
   editingMember: Member;
   registerMember: Member;
   registerForm: boolean;
 
-  constructor(private databaseService: DatabaseService, private route: ActivatedRoute) { }
+  constructor(private databaseService: DatabaseService) { }
 
   ngOnInit() {
     this.getMember();
@@ -22,18 +21,18 @@ export class PersonComponent implements OnInit {
   }
 
   getMember(): void {
-    this.databaseService.getMembers().subscribe(persons => this.members = persons);
+    this.databaseService.getMembers().subscribe(members => this.members = members);
   }
 
-  edit(person: Member) {
+  edit(member: Member) {
     if (this.editingMember.id && !confirm('編集中のデータは削除されます。よろしいですか？')) {
       return;
     }
-    this.editingMember.id = person.id;
-    this.editingMember.name = person.name;
-    this.editingMember.tel = person.tel;
-    this.editingMember.address = person.address;
-    this.editingMember.email = person.email;
+    this.editingMember.id = member.id;
+    this.editingMember.name = member.name;
+    this.editingMember.tel = member.tel;
+    this.editingMember.address = member.address;
+    this.editingMember.email = member.email;
   }
 
   save(): void {

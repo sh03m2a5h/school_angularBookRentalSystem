@@ -1,5 +1,5 @@
 <ng-container *ngIf="selectedIsbn">
-  <h2 *ngIf="selectedBook">{{selectedBook.title}} の詳細</h2>
+  <h2>{{getTitle()}} の詳細</h2>
   <table>
     <thead>
     <tr>
@@ -13,7 +13,7 @@
     <tr *ngFor="let bookDetail of selectedBookDetail">
       <td>{{bookDetail.serial}}</td>
       <td>{{bookDetail.status}}</td>
-      <td>{{bookDetail.date}}</td>
+      <td>{{bookDetail.rentalDate | date:'yyyy-MM-dd'}}</td>
       <td><a (click)="delete(bookDetail)">削除</a></td>
     </tr>
     </tbody>

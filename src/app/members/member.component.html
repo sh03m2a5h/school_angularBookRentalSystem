@@ -1,0 +1,40 @@
+<table>
+  <thead>
+    <tr>
+      <th>会員番号</th>
+      <th>名前</th>
+      <!--<th>住所</th>-->
+      <th>電話番号</th>
+      <!--<th>メールアドレス</th>-->
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let member of members">
+      <td [routerLink]="['/members',member.id]">{{member.id}}</td>
+      <ng-container *ngIf="editingMember.id!==member.id">
+        <td>{{member.name}}</td>
+        <!--<td>{{members.address}}</td>-->
+        <td>{{member.tel}}</td>
+        <!--<td>{{members.email}}</td>-->
+      </ng-container>
+      <ng-container *ngIf="editingMember.id===member.id">
+        <td><input [(ngModel)]="editingMember.name"></td>
+        <!--<td><input [(ngModel)]="editingMember.address"></td>-->
+        <td><input [(ngModel)]="editingMember.tel"></td>
+        <!--<td><input [(ngModel)]="editingMember.email"></td>-->
+      </ng-container>
+      <td>
+        <a [routerLink]="['/members',member.id,'edit']">編集</a>
+        /
+        <a (click)="delete(member)">削除</a>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+  <tr>
+    <td colspan="6" [routerLink]="['./register']">会員を登録する<span class="triangle"></span></td>
+  </tr>
+  </tfoot>
+</table>
+<router-outlet></router-outlet>

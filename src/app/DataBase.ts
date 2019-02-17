@@ -72,6 +72,10 @@ export class RentHistory {
     }
   }
 }
+export class BookView {
+  public book: Book;
+  public bookDetail: BookDetail;
+}
 
 export class DataBase {
   public members: Array<Member> = new Array<Member>();

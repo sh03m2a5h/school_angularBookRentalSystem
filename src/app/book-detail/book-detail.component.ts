@@ -29,6 +29,15 @@ export class BookDetailComponent implements OnInit {
     console.log('bookChanged');
   }
 
+  getTitle() {
+    const book = this.databaseService.getBookByIsbn(this.selectedIsbn);
+    if (book) {
+      return book.title;
+    } else {
+      return '';
+    }
+  }
+
   getBookDetails() {
     this.databaseService.getBookDetailsByIsbn(this.selectedIsbn).then((bookDetail: Array<BookDetail>) => {
       this.selectedBookDetail = bookDetail;

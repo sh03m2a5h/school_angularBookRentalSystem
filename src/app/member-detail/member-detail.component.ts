@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {DatabaseService} from '../database.service';
 import {ActivatedRoute} from '@angular/router';
-import {Book, BookDetail, Member} from '../DataBase';
+import {Book, BookDetail, Member, BookView} from '../DataBase';
 
 @Component({
   selector: 'app-member-detail',
@@ -11,13 +11,7 @@ import {Book, BookDetail, Member} from '../DataBase';
 export class MemberDetailComponent implements OnInit {
   selectedId: number;
   member: Member;
-  rentBooks: [{
-    book: Book,
-    bookDetail: BookDetail
-  }] = [{
-    book: null,
-    bookDetail: null
-  }];
+  rentBooks: Array<BookView> = new Array<BookView>();
 
   constructor(private databaseService: DatabaseService, private  route: ActivatedRoute) {
   }
@@ -50,6 +44,12 @@ export class MemberDetailComponent implements OnInit {
           );
         }
       }
+    });
+  }
+
+  setReturn(book: BookView) {
+    this.databaseService.setReturn(book.book.isbn, book.bookDetail.serial, this.member.id).then(() => {
+      this.getRentBook();
     });
   }
 }

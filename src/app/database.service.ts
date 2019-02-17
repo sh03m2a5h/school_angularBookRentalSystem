@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {DataBase, Book, BookDetail, Member, RentHistory} from './DataBase';
 import {Observable, of} from 'rxjs';
 import * as io from 'socket.io-client';
-import {promise} from 'selenium-webdriver';
 
 @Injectable({
   providedIn: 'root'
@@ -87,8 +86,9 @@ export class DatabaseService {
 
   addMember(member: Member): void {
     // this.dataBase.generateMemberId(member);
-    this.dataBase.addMember(member);
+    // this.dataBase.addMember(member);
     const request = new DataBase();
+    this.dataBase.generateMemberId(member);
     request.addMember(member);
     this.socket.emit('append', request);
   }
@@ -107,13 +107,12 @@ export class DatabaseService {
   }
 
   memberUpdateApply(member: Member): void {
-    this.dataBase.members.forEach((targetPerson, targetIdx) => {
-      if (targetPerson.id === member.id) {
-        this.dataBase.members.splice(targetIdx, 1, member);
-        const request = new DataBase();
-        request.addMember(member);
-        this.socket.emit('update', request);
-        return true;
+    this.dataBase.members.forEach((targetMember, targetIdx) => {
+      if (targetMember.id === member.id) {
+        targetMember.email = member.email;
+        targetMember.name = member.name;
+        targetMember.address = member.address;
+        targetMember.tel = member.tel;
       }
     });
   }
@@ -121,7 +120,9 @@ export class DatabaseService {
   bookUpdateApply(book: Book) {
     this.dataBase.books.forEach((targetBook, targetIdx) => {
       if (targetBook.isbn === book.isbn) {
-        this.dataBase.books.splice(targetIdx, 1, book);
+        targetBook.title = book.title;
+        targetBook.date = book.date;
+        targetBook.actor = book.actor;
       }
     });
   }
@@ -129,7 +130,9 @@ export class DatabaseService {
   bookDetailUpdateApply(bookDetail: BookDetail) {
     this.dataBase.bookDetails.forEach((targetBookDetail, targetIdx) => {
       if (targetBookDetail.isbn === bookDetail.isbn && targetBookDetail.serial === bookDetail.serial) {
-        this.dataBase.bookDetails.splice(targetIdx, 1, bookDetail);
+        targetBookDetail.status = bookDetail.status;
+        targetBookDetail.rentalDate = bookDetail.rentalDate;
+        targetBookDetail.returnDate = bookDetail.returnDate;
       }
     });
   }
@@ -177,8 +180,8 @@ export class DatabaseService {
       });
     });
     deleteDB.members.forEach((delMember) => {
-      this.dataBase.members.forEach((targetPerson, targetIdx) => {
-        if (targetPerson.id === delMember.id) {
+      this.dataBase.members.forEach((targetMember, targetIdx) => {
+        if (targetMember.id === delMember.id) {
           this.dataBase.members.splice(targetIdx, 1);
         }
       });

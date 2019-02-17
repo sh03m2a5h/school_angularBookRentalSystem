@@ -1,0 +1,28 @@
+<h1>会員登録</h1>
+<table>
+  <tbody>
+    <tr>
+      <th>名前</th>
+      <td><input type="text" [(ngModel)]="registerMember.name"></td>
+    </tr>
+    <tr>
+      <th>住所</th>
+      <td><input type="text" [(ngModel)]="registerMember.address"></td>
+    </tr>
+    <tr>
+      <th>電話番号</th>
+      <td><input type="text" [(ngModel)]="registerMember.tel"></td>
+    </tr>
+    <tr>
+      <th>メールアドレス</th>
+      <td><input type="text" [(ngModel)]="registerMember.email"></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2">
+        <input type="button" value="登録" (click)="doRegister()">
+      </td>
+    </tr>
+  </tfoot>
+</table>

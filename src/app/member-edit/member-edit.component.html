@@ -1,0 +1,30 @@
+<ng-container *ngIf="editMember">
+  <h1>{{editMember.name}} さんの編集</h1>
+  <table>
+    <tbody>
+    <tr>
+      <th>名前</th>
+      <td><input type="text" [(ngModel)]="editMember.name"></td>
+    </tr>
+    <tr>
+      <th>住所</th>
+      <td><input type="text" [(ngModel)]="editMember.address"></td>
+    </tr>
+    <tr>
+      <th>電話番号</th>
+      <td><input type="text" [(ngModel)]="editMember.tel"></td>
+    </tr>
+    <tr>
+      <th>メールアドレス</th>
+      <td><input type="text" [(ngModel)]="editMember.email"></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+      <td colspan="2">
+        <input type="button" value="保存" (click)="Save()">
+      </td>
+    </tr>
+    </tfoot>
+  </table>
+</ng-container>
